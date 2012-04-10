@@ -2,7 +2,7 @@
 django_seleniumhelpers
 ###########################
 
-Extends ``django.test.LiveServerTestCase`` to simplify selenium webdrive testing.
+Extends ``django.test.LiveServerTestCase`` to simplify selenium webdriver testing.
 
 
 Features
