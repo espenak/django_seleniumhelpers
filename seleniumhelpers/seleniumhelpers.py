@@ -1,27 +1,41 @@
-from selenium.webdriver.support.ui import WebDriverWait
 from unittest import skipIf
-from django.test import LiveServerTestCase
 import os
-
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
 from django.conf import settings
+from django.test import LiveServerTestCase
 
 
 def get_setting_with_envfallback(setting, default=False):
     return getattr(settings, 'SKIP_SELENIUMTESTS', os.environ.get('SKIP_SELENIUMTESTS', default))
 
+
 @skipIf(get_setting_with_envfallback('SKIP_SELENIUMTESTS'),
     'Selenium tests have been disabled in settings.py using SKIP_SELENIUMTESTS=True.')
 class SeleniumTestCase(LiveServerTestCase):
+    """
+    Extends ``django.test.LiveServerTestCase`` to simplify selenium testing.
+    """
     @classmethod
-    def getDriver(self):
+    def _getDriver(self):
         browser = get_setting_with_envfallback('SELENIUM_BROWSER', 'Chrome')
         return getattr(webdriver, browser)()
 
     @classmethod
     def setUpClass(cls):
-        cls.selenium = cls.getDriver()
+        """
+        Adds the ``selenium`` attribute to the class. The ``selenium`` attribute
+        defaults to an instance of ``selenium.webdriver.Chrome``, however this
+        can be overridden using the ``SELENIUM_BROWSER`` django setting or environment
+        variable. If both the django setting and and environment variable is set, the
+        environment variable is used. This means that you can set the default
+        value in ``settings.py`` and override it in an environment variable, typically
+        when running the ``test`` command::
+
+            SELENIUM_BROWSER=Firefox python manage.py test
+        """
+        cls.selenium = cls._getDriver()
         super(SeleniumTestCase, cls).setUpClass()
 
     @classmethod

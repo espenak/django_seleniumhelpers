@@ -11,6 +11,11 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+
+
+.. autoclass:: seleniumhelpers.SeleniumTestHelpers
+
+
 Indices and tables
 ==================
 
