@@ -13,7 +13,7 @@ Contents:
 
 
 
-.. autoclass:: seleniumhelpers.SeleniumTestHelpers
+.. autoclass:: seleniumhelpers.seleniumhelpers.SeleniumTestHelpers
 
 
 Indices and tables
