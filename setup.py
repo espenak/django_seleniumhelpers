@@ -17,7 +17,7 @@ setup(name = 'django_seleniumhelpers',
       url = 'https://github.com/espenak/django_seleniumhelpers',
       author = 'Espen Angell Kristiansen',
       packages=find_packages(exclude=['ez_setup']),
-      install_requires = ['setuptools', 'Django'],
+      install_requires = ['setuptools', 'Django', 'selenium'],
       include_package_data=True,
       zip_safe=False,
       classifiers=[
