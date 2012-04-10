@@ -1,19 +1,23 @@
 from selenium.webdriver.support.ui import WebDriverWait
-from unittest import skipIf, LiveServerTestCase
+from unittest import skipIf
+from django.test import LiveServerTestCase
+import os
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from django.conf import settings
 
 
+def get_setting_with_envfallback(setting, default=False):
+    return getattr(settings, 'SKIP_SELENIUMTESTS', os.environ.get('SKIP_SELENIUMTESTS', default))
 
-@skipIf(hasattr(settings, 'SKIP_SELENIUMTESTS') and settings.SKIP_SELENIUMTESTS,
+@skipIf(get_setting_with_envfallback('SKIP_SELENIUMTESTS'),
     'Selenium tests have been disabled in settings.py using SKIP_SELENIUMTESTS=True.')
 class SeleniumTestCase(LiveServerTestCase):
     @classmethod
     def getDriver(self):
-        driver = getattr(settings, 'SELENIUM_BROWSER', 'Chrome')
-        return getattr(webdriver, settings.SELENIUM_BROWSER)()
+        browser = get_setting_with_envfallback('SELENIUM_BROWSER', 'Chrome')
+        return getattr(webdriver, browser)()
 
     @classmethod
     def setUpClass(cls):
@@ -24,6 +28,15 @@ class SeleniumTestCase(LiveServerTestCase):
     def tearDownClass(cls):
         super(SeleniumTestCase, cls).tearDownClass()
         cls.selenium.quit()
+
+
+    def getPath(self, path):
+        """
+        Shortcut for ``self.selenium.get(...)`` with ``path`` prefixed by
+        ``live_server_url`` as argument.
+        """
+        return self.selenium.get('{live_server_url}{path}'.format(live_server_url=self.live_server_url,
+                                                                path=path))
 
     def waitForCssSelector(self, cssselector, timeout=10):
         """
