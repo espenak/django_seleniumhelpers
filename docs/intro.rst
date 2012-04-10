@@ -13,7 +13,7 @@ Features
 Issues/contribute
 -----------------
 
-Report any issues at the `github project page <django_seleniumhelpers>`_, and feel free
+Report any issues at the `github project page <django_seleniumhelpers_github>`_, and feel free
 to add your own guides/experiences to the wiki, and to contribute changes using
 pull requests.
 
@@ -34,4 +34,4 @@ Setup
 Add ``'seleniumhelpers'`` to ``INSTALLED_APPS``.
 
 
-.. _`django_seleniumhelpers`: https://github.com/espenak/django_seleniumhelpers
+.. _`django_seleniumhelpers_github`: https://github.com/espenak/django_seleniumhelpers
