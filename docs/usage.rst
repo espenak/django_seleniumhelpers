@@ -41,7 +41,7 @@ Select selenium browser::
 
 See available browsers::
 
-    $ SELENIUM_BROWSER=Firefox python manage.py listseleniumbrowsers
+    $ python manage.py listseleniumbrowsers
 
 Skip selenium tests::
 
