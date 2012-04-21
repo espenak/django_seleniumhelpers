@@ -6,13 +6,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from django.test import LiveServerTestCase
 
 
-def get_setting_with_envfallback(setting, default=False):
+def get_setting_with_envfallback(setting, default=None):
     try:
         from django.conf import settings
     except ImportError:
         return default
     else:
-        return getattr(settings, 'SKIP_SELENIUMTESTS', os.environ.get('SKIP_SELENIUMTESTS', default))
+        return getattr(settings, setting, os.environ.get(setting, default))
 
 
 @skipIf(get_setting_with_envfallback('SKIP_SELENIUMTESTS'),
