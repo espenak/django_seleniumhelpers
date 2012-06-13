@@ -6,7 +6,12 @@
 Welcome to django_seleniumhelpers's documentation!
 ==================================================
 
-Contents:
+Code/issues
+-----------
+https://github.com/espenak/django_seleniumhelpers
+
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
