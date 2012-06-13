@@ -12,7 +12,9 @@ def get_setting_with_envfallback(setting, default=None):
     except ImportError:
         return default
     else:
-        return getattr(settings, setting, os.environ.get(setting, default))
+        fallback = getattr(settings, setting, default)
+        value = os.environ.get(setting, fallback)
+        return value
 
 
 @skipIf(get_setting_with_envfallback('SKIP_SELENIUMTESTS'),
