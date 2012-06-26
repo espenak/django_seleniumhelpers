@@ -11,7 +11,7 @@ setup(name = 'django_seleniumhelpers',
       install_requires = ['distribute', 'Django', 'selenium'],
       include_package_data=True,
       zip_safe=False,
-      long_description=open('README.rst').read(),
+      long_description='See http://github.com/espenak/django_seleniumhelpers',
       classifiers=[
                    'Development Status :: 5 - Production/Stable',
                    'Environment :: Web Environment',
