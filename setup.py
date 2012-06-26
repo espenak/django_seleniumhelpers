@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+from seleniumhelpers import version
 
 setup(name = 'django_seleniumhelpers',
       description = 'Extends django.test.LiveServerTestCase to make selenium testing even easier.',
-      version = '1.0.2',
+      version = version,
       license='BSD',
       url = 'https://github.com/espenak/django_seleniumhelpers',
       author = 'Espen Angell Kristiansen',
