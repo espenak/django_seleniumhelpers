@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
-from seleniumhelpers_version import version
 
 setup(name = 'django_seleniumhelpers',
       description = 'Extends django.test.LiveServerTestCase to make selenium testing even easier.',
-      version = version,
+      version = '1.0.5',
       license='BSD',
       url = 'https://github.com/espenak/django_seleniumhelpers',
       author = 'Espen Angell Kristiansen',
+      author_email = 'post@espenak.net',
       packages=find_packages(exclude=['ez_setup']),
       install_requires = ['distribute', 'Django', 'selenium'],
       include_package_data=True,
