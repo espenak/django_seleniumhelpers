@@ -53,7 +53,7 @@ copyright = u'2012, Espen Angell Kristiansen'
 # built documents.
 #
 # The short X.Y version.
-from seleniumhelpers import version
+from seleniumhelpers_version import version
 # The full version, including alpha/beta/rc tags.
 release = version
 
