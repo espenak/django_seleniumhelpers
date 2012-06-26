@@ -41,7 +41,10 @@ class SeleniumTestCase(LiveServerTestCase):
 
             SELENIUM_BROWSER=Firefox python manage.py test
         """
+
+        #: The selenium testbrowser object.
         cls.selenium = cls._getDriver()
+
         super(SeleniumTestCase, cls).setUpClass()
 
     @classmethod
@@ -58,13 +61,15 @@ class SeleniumTestCase(LiveServerTestCase):
         return self.selenium.get('{live_server_url}{path}'.format(live_server_url=self.live_server_url,
                                                                 path=path))
 
-    def waitForCssSelector(self, cssselector, timeout=10):
+    def waitForCssSelector(self, cssselector, timeout=10, within=None):
         """
         Wait for the given ``cssselector``.
 
         :param timeout: Fail unless the ``cssselector`` is found before ``timeout`` seconds. Defaults to ``10``.
+        :param within: The element to run ``find_element_by_css_selector()`` on. Defaults to ``self.selenium``.
         """
-        WebDriverWait(self.selenium, timeout).until(lambda selenium: selenium.find_elements_by_css_selector(cssselector))
+        within = within or self.selenium
+        WebDriverWait(within , timeout).until(lambda e: e.find_elements_by_css_selector(cssselector))
 
     def waitForEnabled(self, element, timeout=10):
         """
@@ -74,6 +79,14 @@ class SeleniumTestCase(LiveServerTestCase):
         """
         WebDriverWait(self.selenium, timeout).until(lambda selenium: element.is_enabled())
 
+    def waitForDisabled(self, element, timeout=10):
+        """
+        Wait for the given ``element`` to become disabled (``element.is_enabled() == False``).
+
+        :param timeout: Fail unless the ``element`` becomes disabled before ``timeout`` seconds. Defaults to ``10``.
+        """
+        WebDriverWait(self.selenium, timeout).until(lambda selenium: not element.is_enabled())
+
     def waitForText(self, text, timeout=10):
         """
         Wait for ``text`` to appear in ``selenium.page_source``.
@@ -81,6 +94,18 @@ class SeleniumTestCase(LiveServerTestCase):
         :param timeout: Fail unless the ``text`` appears in ``selenium.page_source`` before ``timeout`` seconds has passed. Defaults to ``10``.
         """
         WebDriverWait(self.selenium, timeout).until(lambda selenium: text in selenium.page_source)
+
+    def waitForTitle(self, title):
+        """
+        Wait until the page title (title-tag) equals the given ``title``.
+        """
+        self.waitFor(self.selenium, lambda selenium: selenium.title==title)
+
+    def waitForTitleContains(self, title):
+        """
+        Wait until the page title (title-tag) contains the given ``title``.
+        """
+        self.waitFor(self.selenium, lambda selenium: title in selenium.title)
 
     def executeScript(self, script, element):
         """
