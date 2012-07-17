@@ -15,6 +15,8 @@ def get_setting_with_envfallback(setting, default=None):
     else:
         fallback = getattr(settings, setting, default)
         value = os.environ.get(setting, fallback)
+        if isinstance(default, int):
+            value = int(value)
         return value
 
 
@@ -62,7 +64,9 @@ class SeleniumTestCase(LiveServerTestCase):
         return self.selenium.get('{live_server_url}{path}'.format(live_server_url=self.live_server_url,
                                                                 path=path))
 
-    def waitForCssSelector(self, cssselector, timeout=10, within=None, msg='No elements match css selector "{cssselector}".'):
+    def waitForCssSelector(self, cssselector,
+                           timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10),
+                           within=None, msg='No elements match css selector "{cssselector}".'):
         """
         Wait for the given ``cssselector``.
 
@@ -76,7 +80,9 @@ class SeleniumTestCase(LiveServerTestCase):
                      timeout=timeout,
                      msg=msg.format(cssselector=cssselector))
 
-    def waitForEnabled(self, element, timeout=10, msg='The element is not enabled.'):
+    def waitForEnabled(self, element,
+                       timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10),
+                       msg='The element is not enabled.'):
         """
         Wait for the given ``element`` to become enabled (``element.is_enabled() == True``).
 
@@ -85,7 +91,9 @@ class SeleniumTestCase(LiveServerTestCase):
         self.waitFor(self.selenium, lambda selenium: element.is_enabled(),
                      timeout, msg)
 
-    def waitForDisabled(self, element, timeout=10, msg='The element is not disabled.'):
+    def waitForDisabled(self, element,
+                        timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10),
+                        msg='The element is not disabled.'):
         """
         Wait for the given ``element`` to become disabled (``element.is_enabled() == False``).
 
@@ -94,7 +102,9 @@ class SeleniumTestCase(LiveServerTestCase):
         self.waitFor(self.selenium, lambda selenium: not element.is_enabled(),
                      timeout, msg)
 
-    def waitForText(self, text, timeout=10, msg='Could not find text "{text}"'):
+    def waitForText(self, text,
+                    timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10),
+                    msg='Could not find text "{text}"'):
         """
         Wait for ``text`` to appear in ``selenium.page_source``.
 
@@ -103,7 +113,8 @@ class SeleniumTestCase(LiveServerTestCase):
         self.waitFor(self.selenium, lambda selenium: text in selenium.page_source, timeout,
                      msg=msg.format(text=text))
 
-    def waitForTitle(self, title, timeout=10):
+    def waitForTitle(self, title,
+                     timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10)):
         """
         Wait until the page title (title-tag) equals the given ``title``.
         """
@@ -111,7 +122,8 @@ class SeleniumTestCase(LiveServerTestCase):
                      timeout=timeout,
                      msg='Title does not contain "{title}"'.format(**vars()))
 
-    def waitForTitleContains(self, title, timeout=10):
+    def waitForTitleContains(self, title,
+                             timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10)):
         """
         Wait until the page title (title-tag) contains the given ``title``.
         """
@@ -131,7 +143,9 @@ class SeleniumTestCase(LiveServerTestCase):
         """
         return self.executeScript("return arguments[0].innerHTML", element)
 
-    def waitFor(self, item, fn, timeout=10, msg=None):
+    def waitFor(self, item, fn,
+                timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10),
+          msg=None):
         """
         Wait for the ``fn`` function to return ``True``. The ``item`` is
         forwarded as argument to ``fn``.
