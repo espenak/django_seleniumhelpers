@@ -3,6 +3,7 @@ import os
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
 from django.test import LiveServerTestCase
 
 
@@ -61,7 +62,7 @@ class SeleniumTestCase(LiveServerTestCase):
         return self.selenium.get('{live_server_url}{path}'.format(live_server_url=self.live_server_url,
                                                                 path=path))
 
-    def waitForCssSelector(self, cssselector, timeout=10, within=None):
+    def waitForCssSelector(self, cssselector, timeout=10, within=None, msg='No elements match css selector "{cssselector}".'):
         """
         Wait for the given ``cssselector``.
 
@@ -70,42 +71,53 @@ class SeleniumTestCase(LiveServerTestCase):
         """
         within = within or self.selenium
         WebDriverWait(within , timeout).until(lambda e: e.find_elements_by_css_selector(cssselector))
+        self.waitFor(within,
+                     lambda e: e.find_elements_by_css_selector(cssselector),
+                     timeout=timeout,
+                     msg=msg.format(cssselector=cssselector))
 
-    def waitForEnabled(self, element, timeout=10):
+    def waitForEnabled(self, element, timeout=10, msg='The element is not enabled.'):
         """
         Wait for the given ``element`` to become enabled (``element.is_enabled() == True``).
 
         :param timeout: Fail unless the ``element`` becomes enabled before ``timeout`` seconds. Defaults to ``10``.
         """
-        WebDriverWait(self.selenium, timeout).until(lambda selenium: element.is_enabled())
+        self.waitFor(self.selenium, lambda selenium: element.is_enabled(),
+                     timeout, msg)
 
-    def waitForDisabled(self, element, timeout=10):
+    def waitForDisabled(self, element, timeout=10, msg='The element is not disabled.'):
         """
         Wait for the given ``element`` to become disabled (``element.is_enabled() == False``).
 
         :param timeout: Fail unless the ``element`` becomes disabled before ``timeout`` seconds. Defaults to ``10``.
         """
-        WebDriverWait(self.selenium, timeout).until(lambda selenium: not element.is_enabled())
+        self.waitFor(self.selenium, lambda selenium: not element.is_enabled(),
+                     timeout, msg)
 
-    def waitForText(self, text, timeout=10):
+    def waitForText(self, text, timeout=10, msg='Could not find text "{text}"'):
         """
         Wait for ``text`` to appear in ``selenium.page_source``.
 
         :param timeout: Fail unless the ``text`` appears in ``selenium.page_source`` before ``timeout`` seconds has passed. Defaults to ``10``.
         """
-        WebDriverWait(self.selenium, timeout).until(lambda selenium: text in selenium.page_source)
+        self.waitFor(self.selenium, lambda selenium: text in selenium.page_source, timeout,
+                     msg=msg.format(text=text))
 
-    def waitForTitle(self, title):
+    def waitForTitle(self, title, timeout=10):
         """
         Wait until the page title (title-tag) equals the given ``title``.
         """
-        self.waitFor(self.selenium, lambda selenium: selenium.title==title)
+        self.waitFor(self.selenium, lambda selenium: selenium.title==title,
+                     timeout=timeout,
+                     msg='Title does not contain "{title}"'.format(**vars()))
 
-    def waitForTitleContains(self, title):
+    def waitForTitleContains(self, title, timeout=10):
         """
         Wait until the page title (title-tag) contains the given ``title``.
         """
-        self.waitFor(self.selenium, lambda selenium: title in selenium.title)
+        self.waitFor(self.selenium, lambda selenium: title in selenium.title,
+                     timeout=timeout,
+                     msg='Title does not contain "{title}"'.format(**vars()))
 
     def executeScript(self, script, element):
         """
@@ -119,21 +131,28 @@ class SeleniumTestCase(LiveServerTestCase):
         """
         return self.executeScript("return arguments[0].innerHTML", element)
 
-    def waitFor(self, item, fn, timeout=10):
+    def waitFor(self, item, fn, timeout=10, msg=None):
         """
         Wait for the ``fn`` function to return ``True``. The ``item`` is
         forwarded as argument to ``fn``.
 
         Example (wait for text in an element)::
 
-            waitFor(myelem, lambda myelem: len(myelem.text) > 0)
+            waitFor(myelem, lambda myelem: len(myelem.text) > 0, msg='myelem is empty')
         """
-        WebDriverWait(item, timeout).until(fn)
+        try:
+            WebDriverWait(item, timeout).until(fn)
+        except TimeoutException, e:
+            errormessage = 'waitFor timed out after {timeout} seconds. Error message: {msg}'.format(**vars())
+            self.fail(errormessage)
 
-    def failIfCssSelectorFound(self, element, css_selector):
+    def failIfCssSelectorFound(self, element, css_selector,
+                               msg='CSS selector, "{css_selector}" matches at least one element, when we expected it not to.'):
         """
         Assert that ``element.find_element_by_css_selector(css_selector)``
         raises ``NoSuchElementException``.
         """
-        with self.assertRaises(NoSuchElementException):
+        try:
             element.find_element_by_css_selector(css_selector)
+        except NoSuchElementException, e:
+            self.fail(msg=msg.format(css_selector=css_selector))
