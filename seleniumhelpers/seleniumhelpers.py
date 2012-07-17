@@ -7,7 +7,7 @@ from selenium.common.exceptions import TimeoutException
 from django.test import LiveServerTestCase
 
 
-def get_setting_with_envfallback(setting, default=None):
+def get_setting_with_envfallback(setting, default=None, typecast=None):
     try:
         from django.conf import settings
     except ImportError:
@@ -15,9 +15,13 @@ def get_setting_with_envfallback(setting, default=None):
     else:
         fallback = getattr(settings, setting, default)
         value = os.environ.get(setting, fallback)
-        if isinstance(default, int):
-            value = int(value)
+        if typecast:
+            value = typecast(value)
         return value
+
+def get_default_timeout():
+    return get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', default=4,
+                                        typecast=int)
 
 
 @skipIf(get_setting_with_envfallback('SKIP_SELENIUMTESTS'),
@@ -65,12 +69,12 @@ class SeleniumTestCase(LiveServerTestCase):
                                                                 path=path))
 
     def waitForCssSelector(self, cssselector,
-                           timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10),
+                           timeout=get_default_timeout(),
                            within=None, msg='No elements match css selector "{cssselector}".'):
         """
         Wait for the given ``cssselector``.
 
-        :param timeout: Fail unless the ``cssselector`` is found before ``timeout`` seconds. Defaults to ``10``.
+        :param timeout: Fail unless the ``cssselector`` is found before ``timeout`` seconds.
         :param within: The element to run ``find_element_by_css_selector()`` on. Defaults to ``self.selenium``.
         """
         within = within or self.selenium
@@ -81,18 +85,18 @@ class SeleniumTestCase(LiveServerTestCase):
                      msg=msg.format(cssselector=cssselector))
 
     def waitForEnabled(self, element,
-                       timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10),
+                       timeout=get_default_timeout(),
                        msg='The element is not enabled.'):
         """
         Wait for the given ``element`` to become enabled (``element.is_enabled() == True``).
 
-        :param timeout: Fail unless the ``element`` becomes enabled before ``timeout`` seconds. Defaults to ``10``.
+        :param timeout: Fail unless the ``element`` becomes enabled before ``timeout`` seconds.
         """
         self.waitFor(self.selenium, lambda selenium: element.is_enabled(),
                      timeout, msg)
 
     def waitForDisabled(self, element,
-                        timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10),
+                        timeout=get_default_timeout(),
                         msg='The element is not disabled.'):
         """
         Wait for the given ``element`` to become disabled (``element.is_enabled() == False``).
@@ -103,18 +107,18 @@ class SeleniumTestCase(LiveServerTestCase):
                      timeout, msg)
 
     def waitForText(self, text,
-                    timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10),
+                    timeout=get_default_timeout(),
                     msg='Could not find text "{text}"'):
         """
         Wait for ``text`` to appear in ``selenium.page_source``.
 
-        :param timeout: Fail unless the ``text`` appears in ``selenium.page_source`` before ``timeout`` seconds has passed. Defaults to ``10``.
+        :param timeout: Fail unless the ``text`` appears in ``selenium.page_source`` before ``timeout`` seconds has passed.
         """
         self.waitFor(self.selenium, lambda selenium: text in selenium.page_source, timeout,
                      msg=msg.format(text=text))
 
     def waitForTitle(self, title,
-                     timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10)):
+                     timeout=get_default_timeout()):
         """
         Wait until the page title (title-tag) equals the given ``title``.
         """
@@ -123,7 +127,7 @@ class SeleniumTestCase(LiveServerTestCase):
                      msg='Title does not contain "{title}"'.format(**vars()))
 
     def waitForTitleContains(self, title,
-                             timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10)):
+                             timeout=get_default_timeout()):
         """
         Wait until the page title (title-tag) contains the given ``title``.
         """
@@ -144,7 +148,7 @@ class SeleniumTestCase(LiveServerTestCase):
         return self.executeScript("return arguments[0].innerHTML", element)
 
     def waitFor(self, item, fn,
-                timeout=get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', 10),
+                timeout=get_default_timeout(),
           msg=None):
         """
         Wait for the ``fn`` function to return ``True``. The ``item`` is

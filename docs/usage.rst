@@ -54,6 +54,19 @@ Skip selenium tests::
     for more details.
 
 
+Configure timout
+----------------
+
+You can configure the default timeout using ``SELENIUM_DEFAULT_TIMEOUT``, in
+``settings.py`` or as environment variables, just like ``SKIP_SELENIUMTESTS``
+and ``SELENIUM_BROWSER``. Example::
+
+    $ SELENIUM_BROWSER=Firefox SELENIUM_DEFAULT_TIMEOUT=10 python manage.py test
+
+The default timeout is ``4`` seconds, which should be enough unless you are
+running on a very slow machine.
+
+
 
 
 SeleniumTestCase API docs
