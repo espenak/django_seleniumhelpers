@@ -74,13 +74,28 @@ class SeleniumTestCase(LiveServerTestCase):
         """
         Wait for the given ``cssselector``.
 
-        :param timeout: Fail unless the ``cssselector`` is found before ``timeout`` seconds.
         :param within: The element to run ``find_element_by_css_selector()`` on. Defaults to ``self.selenium``.
+        :param timeout: Fail unless the ``cssselector`` is found before ``timeout`` seconds.
         """
         within = within or self.selenium
-        WebDriverWait(within , timeout).until(lambda e: e.find_elements_by_css_selector(cssselector))
         self.waitFor(within,
                      lambda e: e.find_elements_by_css_selector(cssselector),
+                     timeout=timeout,
+                     msg=msg.format(cssselector=cssselector))
+
+    def waitForCssSelectorNotFound(self, cssselector,
+                                   timeout=get_default_timeout(),
+                                   within=None,
+                                   msg='CSS selector, "{cssselector}" matches at least one element, when we expected it not to.'):
+        """
+        Wait for the given ``cssselector`` not to be found.
+
+        :param within: The element to run ``find_elements_by_css_selector()`` on. Defaults to ``self.selenium``.
+        :param timeout: Fail if the ``cssselector`` is still found after ``timeout`` seconds.
+        """
+        within = within or self.selenium
+        self.waitFor(within,
+                     lambda e: len(e.find_elements_by_css_selector(cssselector)) == 0,
                      timeout=timeout,
                      msg=msg.format(cssselector=cssselector))
 
