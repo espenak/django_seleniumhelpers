@@ -183,9 +183,11 @@ class SeleniumTestCase(LiveServerTestCase):
                                msg='CSS selector, "{css_selector}" matches at least one element, when we expected it not to.'):
         """
         Assert that ``element.find_element_by_css_selector(css_selector)``
-        raises ``NoSuchElementException``.
+        does not raise ``NoSuchElementException``.
         """
         try:
             element.find_element_by_css_selector(css_selector)
         except NoSuchElementException, e:
+            pass
+        else:
             self.fail(msg=msg.format(css_selector=css_selector))
