@@ -164,7 +164,7 @@ class SeleniumTestCase(LiveServerTestCase):
 
     def waitFor(self, item, fn,
                 timeout=get_default_timeout(),
-          msg=None):
+                msg=None):
         """
         Wait for the ``fn`` function to return ``True``. The ``item`` is
         forwarded as argument to ``fn``.
@@ -191,3 +191,29 @@ class SeleniumTestCase(LiveServerTestCase):
             pass
         else:
             self.fail(msg=msg.format(css_selector=css_selector))
+
+
+    def waitForDisplayed(self, element, timeout=get_default_timeout(),
+                         msg='The element is not displayed.'):
+        """
+        Wait for the given element to be displayed.
+        """
+        self.waitFor(element, lambda e: e.is_displayed(),
+                     timeout=timeout, msg=msg)
+
+    def waitForNotDisplayed(self, element, timeout=get_default_timeout(),
+                            msg='The element is not hidden.'):
+        """
+        Wait for the given element to be hidden.
+        """
+        self.waitFor(element, lambda e: not e.is_displayed(),
+                     timeout=timeout, msg=msg)
+
+    def waitForAndFindElementByCssSelector(self, cssselector, timeout=get_default_timeout()):
+        """
+        Use :meth:`.waitForCssSelector` to wait until ``cssselector`` is found,
+        then use ``self.selenium.find_element_by_css_selector`` to locate and
+        return the element.
+        """
+        self.waitForCssSelector(cssselector)
+        return self.selenium.find_element_by_css_selector(cssselector)
