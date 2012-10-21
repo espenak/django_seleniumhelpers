@@ -12,6 +12,7 @@ Example
 This example makes it possible to run Firefox3.6 if ``SELENIUM_BROWSER=="Firefox3.6"``::
 
     from seleniumhelpers import SeleniumTestCase
+    from selenium import webdriver
 
     class CustomSeleniumTestCase(SeleniumTestCase):
         @classmethod
