@@ -48,10 +48,7 @@ Skip selenium tests::
     $ SKIP_SELENIUMTESTS=1 python manage.py test
 
 .. note::
-
-    ``SKIP_SELENIUMTESTS`` and ``SELENIUM_BROWSER`` may also be set in
-    ``settings.py``. See :meth:`seleniumhelpers.SeleniumTestCase.setUpClass`
-    for more details.
+    Settings can also be set in ``settings.py``. See :ref:`settings`.
 
 
 Configure timout
@@ -67,6 +64,19 @@ The default timeout is ``4`` seconds, which should be enough unless you are
 running on a very slow machine.
 
 
+
+Use Selenium RC
+---------------
+Using Selenium RC is easy, it only requires you to run the RC-server, and use an additional setting:
+
+1. Download _selenium-server-standalone-XXXX.jar_ from http://code.google.com/p/selenium/downloads/list.
+2. Run the RC-server::
+
+    $ java -jar selenium-server-standalone-XXXX.jar
+
+3. Run the tests with SELENIUM_USE_RC::
+
+    $ SELENIUM_USE_RC=true SELENIUM_BROWSER=Opera python manage.py test
 
 
 SeleniumTestCase API docs

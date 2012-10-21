@@ -24,6 +24,7 @@ def get_default_timeout():
                                         typecast=int)
 
 
+
 @skipIf(get_setting_with_envfallback('SKIP_SELENIUMTESTS'),
     'Selenium tests have been disabled in settings.py using SKIP_SELENIUMTESTS=True.')
 class SeleniumTestCase(LiveServerTestCase):
@@ -31,9 +32,29 @@ class SeleniumTestCase(LiveServerTestCase):
     Extends ``django.test.LiveServerTestCase`` to simplify selenium testing.
     """
     @classmethod
-    def _getDriver(self):
+    def _getDriver(cls):
         browser = get_setting_with_envfallback('SELENIUM_BROWSER', 'Chrome')
-        return getattr(webdriver, browser)()
+        use_rc = get_setting_with_envfallback('SELENIUM_USE_RC', False)
+        return cls.getDriver(browser, bool(use_rc))
+
+    @classmethod
+    def getDriver(cls, browser, use_rc):
+        """
+        Override this to create customize the ``selenium``-attribute.
+
+        :param browser: The value of the ``SELENIUM_BROWSER`` setting.
+        :param use_rc: The value of ``bool(SELENIUM_USE_RC)``.
+        """
+        if use_rc:
+            kwargs = {'desired_capabilities': {'browser_name': browser}}
+            return webdriver.Remote(**kwargs)
+        elif browser == 'phantomjs':
+            kwargs = {'command_executor': 'http://localhost:8080/wd/hub',
+                      'desired_capabilities': {'takeScreenshot': False,
+                                               'javascriptEnabled': True}}
+            return webdriver.Remote(**kwargs)
+        else:
+            return getattr(webdriver, browser)()
 
     @classmethod
     def setUpClass(cls):

@@ -18,6 +18,8 @@ Contents
 
    intro
    usage
+   phantomjs
+   settings
 
 Indices and tables
 ==================
