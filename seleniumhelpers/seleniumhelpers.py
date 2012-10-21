@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from django.test import LiveServerTestCase
 
 
@@ -60,7 +61,14 @@ class SeleniumTestCase(LiveServerTestCase):
         :param use_rc: The value of ``bool(SELENIUM_USE_RC)``.
         """
         if use_rc:
-            kwargs = {'desired_capabilities': {'browser_name': browser}}
+            browser = browser.upper()
+            desired_capabilities = getattr(DesiredCapabilities, browser, None)
+            if desired_capabilities == None:
+                valid_browsers = [key for key in DesiredCapabilities.__dict__
+                                  if not key.startswith('_') and key.isupper()]
+                raise ValueError('Invalid browser: {0}. Valid '
+                                 'browser-names: {1}'.format(browser, valid_browsers))
+            kwargs = {'desired_capabilities': desired_capabilities}
             return webdriver.Remote(**kwargs)
         elif browser == 'phantomjs':
             kwargs = {'command_executor': 'http://localhost:8080/wd/hub',
