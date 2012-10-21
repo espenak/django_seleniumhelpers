@@ -1,1 +1,3 @@
 from seleniumhelpers import SeleniumTestCase
+from seleniumhelpers import get_default_timeout
+from seleniumhelpers import get_setting_with_envfallback

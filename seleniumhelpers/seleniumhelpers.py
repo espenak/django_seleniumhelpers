@@ -8,6 +8,16 @@ from django.test import LiveServerTestCase
 
 
 def get_setting_with_envfallback(setting, default=None, typecast=None):
+    """
+    Get the given setting and fall back to the default of not found in
+    ``django.conf.settings`` or ``os.environ``.
+
+    :param settings: The setting as a string.
+    :param default: The fallback if ``setting`` is not found.
+    :param typecast:
+        A function that converts the given value from string to another type.
+        E.g.: Use ``typecast=int`` to convert the value to int before returning.
+    """
     try:
         from django.conf import settings
     except ImportError:
@@ -20,6 +30,10 @@ def get_setting_with_envfallback(setting, default=None, typecast=None):
         return value
 
 def get_default_timeout():
+    """
+    Get the default timeout. Uses :func:`.get_setting_with_envfallback` to get
+    ``SELENIUM_DEFAULT_TIMEOUT``. Defaults to ``4``.
+    """
     return get_setting_with_envfallback('SELENIUM_DEFAULT_TIMEOUT', default=4,
                                         typecast=int)
 
