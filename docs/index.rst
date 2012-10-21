@@ -20,6 +20,8 @@ Contents
    usage
    phantomjs
    settings
+   api
+   custom
 
 Indices and tables
 ==================
