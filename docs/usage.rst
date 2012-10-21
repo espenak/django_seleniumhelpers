@@ -69,7 +69,7 @@ Use Selenium RC
 ---------------
 Using Selenium RC is easy, it only requires you to run the RC-server, and use an additional setting:
 
-1. Download _selenium-server-standalone-XXXX.jar_ from http://code.google.com/p/selenium/downloads/list.
+1. Download *selenium-server-standalone-XXXX.jar* from http://code.google.com/p/selenium/downloads/list.
 2. Run the RC-server::
 
     $ java -jar selenium-server-standalone-XXXX.jar
