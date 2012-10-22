@@ -252,11 +252,15 @@ class SeleniumTestCase(LiveServerTestCase):
         self.waitFor(element, lambda e: not e.is_displayed(),
                      timeout=timeout, msg=msg)
 
-    def waitForAndFindElementByCssSelector(self, cssselector, timeout=get_default_timeout()):
+    def waitForAndFindElementByCssSelector(self, cssselector, within=None, timeout=get_default_timeout()):
         """
         Use :meth:`.waitForCssSelector` to wait until ``cssselector`` is found,
         then use ``self.selenium.find_element_by_css_selector`` to locate and
         return the element.
+
+        :param within: The element to run ``find_element_by_css_selector()`` on. Defaults to ``self.selenium``.
+        :param timeout: Fail unless the ``cssselector`` is found before ``timeout`` seconds.
         """
-        self.waitForCssSelector(cssselector)
-        return self.selenium.find_element_by_css_selector(cssselector)
+        within = within or self.selenium
+        self.waitForCssSelector(cssselector, within=within, timeout=timeout)
+        return within.find_element_by_css_selector(cssselector)
