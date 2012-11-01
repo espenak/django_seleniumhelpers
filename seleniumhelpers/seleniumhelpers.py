@@ -166,13 +166,22 @@ class SeleniumTestCase(LiveServerTestCase):
 
     def waitForText(self, text,
                     timeout=get_default_timeout(),
-                    msg='Could not find text "{text}"'):
+                    msg='Could not find text "{text}"',
+                    within=None):
         """
-        Wait for ``text`` to appear in ``selenium.page_source``.
+        Wait for ``text`` to appear in ``selenium.page_source`` or from the text of an element.
 
+        :param within: The element to find text within (uses within.text). If
+            this is not specified, we get text from ``selenium.page_source``.
         :param timeout: Fail unless the ``text`` appears in ``selenium.page_source`` before ``timeout`` seconds has passed.
         """
-        self.waitFor(self.selenium, lambda selenium: text in selenium.page_source, timeout,
+        def check(s):
+            text = None
+            if within:
+                return text in within.text
+            else:
+                return text in self.page_source
+        self.waitFor(self.selenium, lambda s: check, timeout,
                      msg=msg.format(text=text))
 
     def waitForTitle(self, title,
