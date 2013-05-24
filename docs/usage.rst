@@ -77,3 +77,12 @@ Using Selenium RC is easy, it only requires you to run the RC-server, and use an
 3. Run the tests with SELENIUM_USE_RC::
 
     $ SELENIUM_USE_RC=true SELENIUM_BROWSER=Opera python manage.py test
+    
+    
+
+Use Chrome or Chromium
+----------------------
+Download and install chromedriver (webdriver for Chrome/Chromium):
+https://code.google.com/p/chromedriver/downloads/list
+
+Run with ``SELENIUM_BROWSER=Chrome``.
