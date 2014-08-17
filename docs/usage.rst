@@ -82,7 +82,9 @@ Using Selenium RC is easy, it only requires you to run the RC-server, and use an
 
 Use Chrome or Chromium
 ----------------------
-Download and install chromedriver (webdriver for Chrome/Chromium):
-https://code.google.com/p/chromedriver/downloads/list
+Download and install chromedriver (webdriver for Chrome/Chromium) with one of these methods:
+
+- Install with ``brew install chromedriver`` on Mac OSX if you use Homebrew.
+- Download from http://chromedriver.storage.googleapis.com/index.html.
 
 Run with ``SELENIUM_BROWSER=Chrome``.
