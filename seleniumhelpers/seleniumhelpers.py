@@ -99,8 +99,8 @@ class SeleniumTestCase(LiveServerTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        super(SeleniumTestCase, cls).tearDownClass()
         cls.selenium.quit()
+        super(SeleniumTestCase, cls).tearDownClass()
 
 
     def getPath(self, path):
